@@ -1,0 +1,95 @@
+{% block content %}
+    <div class="crm-container">
+        <div class="row">
+            <!-- Меню -->
+            <div class="col-md-2 menu-column">
+                <div class="list-group">
+                    <a href="{{ url('site/index', {'menu' : 'deals'}) }}"
+                       class="list-group-item {{ menu == 'deals' ? 'active' : '' }}">
+                        Сделки
+                    </a>
+                    <a href="{{ url('site/index', {'menu' : 'contacts'}) }}"
+                       class="list-group-item {{ menu == 'contacts' ? 'active' : '' }}">
+                        Контакты
+                    </a>
+                </div>
+                <a href="{{ url('site/create-contact') }}" class="btn btn-success btn-block">
+                    + Новый контакт
+                </a>
+                <a href="{{ url('site/create-deal') }}" class="btn btn-success btn-block">
+                    + Новая сделка
+                </a>
+            </div>
+
+            <!-- Список -->
+            <div class="col-md-3 list-column">
+                {% if menu == 'contacts' %}
+                    {% for contact in contacts %}
+                        <a href="{{ url('site/index', {'menu' : 'contacts', 'id' : contact.id}) }}"
+                           class="list-group-item {{ selectedItem and selectedItem.id == contact.id ? 'active' : '' }}">
+                            {{ contact.firstName }} {{ contact.lastName }}
+                        </a>
+                    {% endfor %}
+                {% else %}
+                    {% for deal in deals %}
+                        <a href="{{ url('site/index', {'menu' : 'deals', 'id' : deal.id}) }}"
+                           class="list-group-item {{ selectedItem and selectedItem.id == deal.id ? 'active' : '' }}">
+                            {{ deal.name }}
+                        </a>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <!-- Содержимое -->
+            <div class="col-md-7 content-column">
+                {% if selectedItem %}
+                    {% if menu == 'contacts' %}
+                        <h3>Контакт: {{ selectedItem.firstName }} {{ selectedItem.lastName }}</h3>
+                        <table class="table table-bordered">
+                            <tr><th>ID контакта</th><td>{{ selectedItem.id }}</td></tr>
+                            <tr><th>Имя</th><td>{{ selectedItem.firstName }}</td></tr>
+                            <tr><th>Фамилия</th><td>{{ selectedItem.lastName }}</td></tr>
+                            <tr><th>Сделки</th><td>
+                                    {% for deal in selectedItem.deals %}
+                                        <div>id сделки: {{ deal.id }} : {{ deal.name }}</div>
+                                    {% endfor %}
+                                </td></tr>
+                        </table>
+                    {% else %}
+                        <h3>Сделка: {{ selectedItem.name }}</h3>
+                        <table class="table table-bordered">
+                            <tr><th>ID сделки</th><td>{{ selectedItem.id }}</td></tr>
+                            <tr><th>Наименование</th><td>{{ selectedItem.name }}</td></tr>
+                            <tr><th>Сумма</th><td>{{ selectedItem.amount }}</td></tr>
+                            <tr><th>Контакты</th><td>
+                                    {% for contact in selectedItem.contacts %}
+                                        <div>id контакта: {{ contact.id }} : {{ contact.firstName }} {{ contact.lastName }}</div>
+                                    {% endfor %}
+                                </td></tr>
+                        </table>
+                    {% endif %}
+
+                    <div class="actions">
+                        {% if menu == 'contacts' %}
+                            <a href="{{ url('site/update-contact', {'id' : selectedItem.id}) }}"
+                               class="btn btn-primary">Редактировать</a>
+                        {% else %}
+                            <a href="{{ url('site/update-deal', {'id' : selectedItem.id}) }}"
+                               class="btn btn-primary">Редактировать</a>
+                        {% endif %}
+
+                        {% if menu == 'contacts' %}
+                            <a href="{{ url('site/delete-contact', {'id' : selectedItem.id}) }}"
+                               class="btn btn-danger"
+                               onclick="return confirm('Вы уверены?')">Удалить</a>
+                        {% else %}
+                            <a href="{{ url('site/delete-deal', {'id' : selectedItem.id}) }}"
+                               class="btn btn-danger"
+                               onclick="return confirm('Вы уверены?')">Удалить</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
